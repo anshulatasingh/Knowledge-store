@@ -1,5 +1,7 @@
 package com.backend.dao.impl;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,14 +32,11 @@ public class InfoDaoImplTest {
 	@Test
 	public void test() {
 		int id=1;
-		NodeVo nodeVo=nodeImpl.getNodeById(id);
-		if(nodeVo==null){
-			nodeVo=new NodeVo(id, 0, "Dump", true);
-			nodeImpl.addNode(nodeVo);
-			 nodeVo=nodeImpl.getNodeById(id);
-		}
-		InfoVo infoData = new InfoVo(1, nodeVo.getNodeId(), "1st April", "ROOT", "TESTDATA");
+		List<NodeVo> nodeVo=nodeImpl.getAllNode();
+		if(!nodeVo.isEmpty()){
+		InfoVo infoData = new InfoVo(1,nodeVo.get(0).getNodeId(), "1st April", "ROOT", "TESTDATA");
 		infoImpl.addInfo(infoData);
+		}
 		
 	}
 
