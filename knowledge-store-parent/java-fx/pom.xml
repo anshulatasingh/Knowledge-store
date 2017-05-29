@@ -21,4 +21,30 @@
 		
 	</dependencies>
 	
+	<build>
+	<plugins>
+	
+			<!-- Make this jar executable -->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					DO NOT include log4j.properties file in your Jar
+					<excludes>
+						<exclude>**/log4j.properties</exclude>
+					</excludes>
+					<includes>
+					<include>**/*.fxml</include>
+					</includes>
+					<archive>
+						<manifest>
+							Jar file entry point
+							<mainClass>com.knowledge.store.views.Startup</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin> -->
+	</plugins>
+	</build>
+	
 </project>
