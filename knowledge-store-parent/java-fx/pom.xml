@@ -6,24 +6,37 @@
 		<artifactId>knowledge-store-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>java-fx</artifactId>
 	<name>java-fx-ui</name>
 	<description>java-fx</description>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>knowledge-store</groupId>
 			<artifactId>java-backend-module</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
-	
+
 	<build>
-	<plugins>
-	
+
+
+		<plugins>
+
+			<!-- download source code in Eclipse, best practice -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+				</configuration>
+			</plugin>
+
 			<!-- Make this jar executable -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -33,18 +46,39 @@
 					<excludes>
 						<exclude>**/log4j.properties</exclude>
 					</excludes>
-					<includes>
-					<include>**/*.fxml</include>
-					</includes>
 					<archive>
 						<manifest>
-							Jar file entry point
+							<!-- Jar file entry point -->
+							<addClasspath>true</addClasspath>
 							<mainClass>com.knowledge.store.boot.Startup</mainClass>
+							<classpathPrefix>dependency-jars/</classpathPrefix>
 						</manifest>
 					</archive>
 				</configuration>
-			</plugin> 
-	</plugins>
+			</plugin>
+
+			<!-- Copy project dependency -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<!-- exclude junit, we need runtime dependency only -->
+							<includeScope>runtime</includeScope>
+							<outputDirectory>${project.build.directory}/dependency-jars/</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
 	</build>
-	
+
 </project>

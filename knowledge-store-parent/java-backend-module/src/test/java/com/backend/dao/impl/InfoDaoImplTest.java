@@ -34,6 +34,7 @@ public class InfoDaoImplTest {
 		if(nodeVo==null){
 			nodeVo=new NodeVo(id, 0, "Dump", true);
 			nodeImpl.addNode(nodeVo);
+			 nodeVo=nodeImpl.getNodeById(id);
 		}
 		InfoVo infoData = new InfoVo(1, nodeVo.getNodeId(), "1st April", "ROOT", "TESTDATA");
 		infoImpl.addInfo(infoData);
