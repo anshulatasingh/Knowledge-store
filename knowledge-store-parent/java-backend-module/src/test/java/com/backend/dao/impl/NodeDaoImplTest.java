@@ -12,16 +12,21 @@ import org.junit.Test;
 import com.backend.models.NodeVo;
 
 public class NodeDaoImplTest {
-	NodeDaoImpl nodeImpl;
+
+	private NodeDaoImpl nodeImpl;
+
+	private InfoDaoImpl infoDaoImpl;
 
 	@Before
 	public void setup() {
 		nodeImpl = new NodeDaoImpl();
+		infoDaoImpl = new InfoDaoImpl();
 	}
 
 	@After
 	public void clear() {
 		nodeImpl = null;
+		infoDaoImpl = null;
 	}
 
 	@Test
@@ -46,19 +51,19 @@ public class NodeDaoImplTest {
 
 	@Test
 	public void testRetrive() throws IOException {
-System.out.println(nodeImpl.getNodeById(2));
+		System.out.println(nodeImpl.getNodeById(2));
 	}
-	
+
 	@Test
 	public void testdeleteAll() throws IOException {
- nodeImpl.deleteAllNode();
- nodeImpl.getAllNode();
+		infoDaoImpl.deleteAllInfo();
+		nodeImpl.deleteAllNode();
+		nodeImpl.getAllNode();
 	}
-	
 
 	@Test
 	public void testAllRetrive() throws IOException {
-nodeImpl.getAllNode().forEach(nodeVO->System.out.println(nodeVO));
+		nodeImpl.getAllNode().forEach(nodeVO -> System.out.println(nodeVO));
 	}
 
 }

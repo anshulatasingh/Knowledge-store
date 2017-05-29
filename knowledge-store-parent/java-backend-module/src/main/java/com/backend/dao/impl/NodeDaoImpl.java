@@ -182,7 +182,7 @@ public class NodeDaoImpl implements NodeDao {
 
 		} catch (SQLException e) {
 			LOGGER.error("Error while inserting Node data", e);
-			throw new GenericException("NodeDaoImpl", "Error while inserting Node data", e);
+			throw new GenericException("NodeDaoImpl", "Error while Deleting Node data", e);
 		} finally {
 			DBUtil.close(null, pst, con);
 		}
