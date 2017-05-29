@@ -1,5 +1,5 @@
 
-package com.knowledge.store.startup;
+package com.knowledge.store.views;
 
 
 import java.util.logging.Level;
@@ -23,7 +23,7 @@ public class Startup extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            VBox page = (VBox) FXMLLoader.load(getClass().getResource("/com/knowledge/store/views/HomeView.fxml"));
+            VBox page = (VBox) FXMLLoader.load(getClass().getResource("HomeView.fxml"));
             Scene scene = new Scene(page);
             scene.getStylesheets().add("/com/knowledge/store/views/resources/knowledge-store.css");
             ObservableList l= scene.getStylesheets();
