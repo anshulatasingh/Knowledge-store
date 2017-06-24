@@ -1,25 +1,37 @@
 package com.knowledge.store.controllers;
 
+import com.knowledge.store.model.InfoDataVo;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.web.HTMLEditor;
+import javafx.util.StringConverter;
 
 public class InfoDataController implements Initializable{
+    
+     private final String pattern = "yyyy-MM-dd";
 
     @FXML
     private HBox infoButtonBar;
@@ -47,19 +59,19 @@ public class InfoDataController implements Initializable{
     private Button reloadButon;
 
     @FXML
-    private TableView<?> infoTable;
+    private TableView<InfoDataVo> infoTable;
 
     @FXML
-    private TableColumn<?, ?> id;
+    private TableColumn<InfoDataVo, Integer> id;
 
     @FXML
-    private TableColumn<?, ?> date;
+    private TableColumn<InfoDataVo, String> date;
 
     @FXML
-    private TableColumn<?, ?> label;
+    private TableColumn<InfoDataVo, String> label;
     
     @FXML
-    private TableColumn<?, ?> description;
+    private TableColumn<InfoDataVo, String> description;
 
    
     @FXML
@@ -69,9 +81,9 @@ public class InfoDataController implements Initializable{
     private Label displayedIssueLabel;
  @FXML
     private HTMLEditor descriptionText;
-
+    
     @FXML
-    private TextField dateText;
+    private DatePicker datepicker;
 
     @FXML
     private TextField labelText;
@@ -88,6 +100,7 @@ public class InfoDataController implements Initializable{
 
     @FXML
     void onNewInfoButtonAction(ActionEvent event) {
+        clear();           
 
     }
 
@@ -98,6 +111,13 @@ public class InfoDataController implements Initializable{
 
     @FXML
     void onSaveInfoButtonAction(ActionEvent event) {
+    
+    LocalDate date= datepicker.getValue();
+    String text=labelText.getText();
+    String description=descriptionText.getHtmlText();
+
+InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
+        infoTable.getItems().add(info);
 
     }
 
@@ -118,7 +138,71 @@ public class InfoDataController implements Initializable{
             }
         });
         
-      
+      //mapping table column with infodatavo
+      id.setCellValueFactory(new PropertyValueFactory<InfoDataVo,Integer>("id"));
+      label.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("label"));
+       date.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("date"));
+        description.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("description"));
+        
+        
+        
+        //On selection of Table Row
+        infoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InfoDataVo>(){
+            @Override
+            public void changed(ObservableValue<? extends InfoDataVo> observable, InfoDataVo oldValue, InfoDataVo newValue) {
+               populateMasterTable(newValue);
+                
+                
+            }
+        });
+        
+        
+     
+        
     }
+    
+    
+    public void populateMasterTable(InfoDataVo data ){
+    
+    StringConverter converter = new StringConverter<LocalDate>() {
+            DateTimeFormatter dateFormatter = 
+                DateTimeFormatter.ofPattern(pattern);
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return dateFormatter.format(date);
+                } else {
+                    return "";
+                }
+            }
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        }; 
+    
+     datepicker.setConverter(converter);
+     datepicker.setValue(LocalDate.parse(data.getDate()));
+    labelText.setText(data.getLabel());
+    descriptionText.setHtmlText(data.getDescription());
+    
+    
+    
+    }
+    
+    //To clear the field data  
+      public void clear(){
+      
+      labelText.clear();
+      datepicker.setValue(LocalDate.now());
+      descriptionText.setHtmlText("");
+      labelText.setFocusTraversable(true);
+      
+      }          
+    
 
 }

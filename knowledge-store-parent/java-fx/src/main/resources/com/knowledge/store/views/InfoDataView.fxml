@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -52,12 +52,8 @@
                <children>
         <HBox id="HBox" alignment="CENTER" prefHeight="22.0" prefWidth="558.0" spacing="5.0" styleClass="theme">
           <children>
-            <Label id="label4" fx:id="displayedIssueLabel" minWidth="-Infinity" prefHeight="21.0" prefWidth="50.0" text="DATE: ">
-                           <HBox.margin>
-                              <Insets top="2.0" />
-                           </HBox.margin>
-                        </Label>
-            <TextField id="textField" fx:id="dateText" prefHeight="26.0" prefWidth="75.0" styleClass="text-field" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="datelabel" prefHeight="21.0" prefWidth="36.0" text="DATE:" />
+                        <DatePicker fx:id="datepicker" prefHeight="26.0" prefWidth="122.0" />
                         <Label prefHeight="21.0" prefWidth="58.0" text="LABEL: " />
                         <TextField fx:id="labelText" prefHeight="31.0" prefWidth="508.0" styleClass="text-field" HBox.hgrow="ALWAYS" />
                         <Label prefHeight="17.0" prefWidth="89.0" text="DESCRIPTION: " />
