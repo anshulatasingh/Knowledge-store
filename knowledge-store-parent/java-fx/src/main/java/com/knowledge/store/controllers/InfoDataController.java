@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,6 +21,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
@@ -33,9 +35,8 @@ public class InfoDataController implements Initializable{
     
      private final String pattern = "yyyy-MM-dd";
 
-    @FXML
-    private HBox infoButtonBar;
-    
+    @FXML //injecting and intializing the value of infoButtonBar from .fxml file mapping happens with fx:id
+    private HBox infoButtonBar;   
     
     @FXML
     private Region regionBar;
@@ -52,7 +53,7 @@ public class InfoDataController implements Initializable{
     @FXML
     private Button deleteInfoButton;
 
-    @FXML
+   @FXML
     private Button clearButton;
 
     @FXML
@@ -79,6 +80,7 @@ public class InfoDataController implements Initializable{
 
     @FXML
     private Label displayedIssueLabel;
+    
  @FXML
     private HTMLEditor descriptionText;
     
@@ -90,18 +92,19 @@ public class InfoDataController implements Initializable{
 
     @FXML
     void onClearAction(ActionEvent event) {
-
+     infoTable.getItems().clear();
     }
 
     @FXML
     void onDeleteInfoButtonAction(ActionEvent event) {
-
+     infoTable.getItems().removeAll(
+               infoTable.getSelectionModel().getSelectedItems() );
     }
 
     @FXML
     void onNewInfoButtonAction(ActionEvent event) {
-        clear();           
-
+        clear();
+        //disable(true);
     }
 
     @FXML
@@ -116,14 +119,23 @@ public class InfoDataController implements Initializable{
     String text=labelText.getText();
     String description=descriptionText.getHtmlText();
 
-InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
+    InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
         infoTable.getItems().add(info);
 
     }
 
     @FXML
     void onUpdateInfoAction(ActionEvent event) {
-        System.out.println("Udated");
+        //infoTable.setEditable(true);
+        String date= datepicker.getValue().toString();
+        
+        String text=labelText.getText();
+       
+        String description=descriptionText.getHtmlText();
+             infoTable.getItems().get(0).setDate(date);
+         infoTable.getItems().get(0).setLabel(text);
+         infoTable.getItems().get(0).setDescription(description);
+        
     }
 
     @Override
@@ -134,7 +146,7 @@ InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
          filteredTextBox.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                System.out.println(newValue);
+                System.out.println("old: "+ oldValue + "  new:  " + newValue);
             }
         });
         
@@ -150,13 +162,11 @@ InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
         infoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InfoDataVo>(){
             @Override
             public void changed(ObservableValue<? extends InfoDataVo> observable, InfoDataVo oldValue, InfoDataVo newValue) {
-               populateMasterTable(newValue);
+               populateMasterTable(newValue);       
                 
                 
             }
         });
-        
-        
      
         
     }
@@ -202,7 +212,12 @@ InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
       descriptionText.setHtmlText("");
       labelText.setFocusTraversable(true);
       
-      }          
+      }  
+      
+      public void disable(boolean isDisable){
+      saveInfoButton.setDisable(isDisable);
+      
+      }
     
 
 }
