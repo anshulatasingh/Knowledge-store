@@ -19,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
@@ -28,7 +29,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.text.TextFlow;
 import javafx.scene.web.HTMLEditor;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class InfoDataController implements Initializable{
@@ -89,6 +92,9 @@ public class InfoDataController implements Initializable{
 
     @FXML
     private TextField labelText;
+    
+    
+    
 
     @FXML
     void onClearAction(ActionEvent event) {
@@ -104,6 +110,7 @@ public class InfoDataController implements Initializable{
     @FXML
     void onNewInfoButtonAction(ActionEvent event) {
         clear();
+       
         //disable(true);
     }
 
@@ -126,20 +133,20 @@ public class InfoDataController implements Initializable{
 
     @FXML
     void onUpdateInfoAction(ActionEvent event) {
-        //infoTable.setEditable(true);
-        String date= datepicker.getValue().toString();
-        
-        String text=labelText.getText();
-       
-        String description=descriptionText.getHtmlText();
-             infoTable.getItems().get(0).setDate(date);
-         infoTable.getItems().get(0).setLabel(text);
-         infoTable.getItems().get(0).setDescription(description);
+         InfoDataVo view=infoTable.getSelectionModel().getSelectedItem();
+         if(view!=null){
+        view.setDate(datepicker.getValue().toString());
+        view.setDescription(descriptionText.getHtmlText());
+        view.setLabel(labelText.getText());
+        infoTable.getItems().set(infoTable.getSelectionModel().getSelectedIndex(), view);
+         }        
         
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
+        saveInfoButton.setFocusTraversable(false);
         TextField filteredTextBox = UIUtil.createClearableTextField();
         
          infoButtonBar.getChildren().add(0, filteredTextBox);
@@ -152,17 +159,20 @@ public class InfoDataController implements Initializable{
         
       //mapping table column with infodatavo
       id.setCellValueFactory(new PropertyValueFactory<InfoDataVo,Integer>("id"));
-      label.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("label"));
        date.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("date"));
+            label.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("label"));
         description.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("description"));
-        
-        
-        
+     id.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+        date.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+      label.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+        description.prefWidthProperty().bind(infoTable.widthProperty().divide(4));
+
+       
         //On selection of Table Row
         infoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InfoDataVo>(){
             @Override
             public void changed(ObservableValue<? extends InfoDataVo> observable, InfoDataVo oldValue, InfoDataVo newValue) {
-               populateMasterTable(newValue);       
+                if(newValue!=null){ populateMasterTable(newValue);    }              
                 
                 
             }
@@ -215,8 +225,7 @@ public class InfoDataController implements Initializable{
       }  
       
       public void disable(boolean isDisable){
-      saveInfoButton.setDisable(isDisable);
-      
+      saveInfoButton.setDisable(isDisable);      
       }
     
 
