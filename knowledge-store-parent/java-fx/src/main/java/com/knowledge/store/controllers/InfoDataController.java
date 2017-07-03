@@ -1,11 +1,14 @@
 package com.knowledge.store.controllers;
 
 import com.knowledge.store.model.InfoDataVo;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
+
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,14 +21,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.text.TextFlow;
 import javafx.scene.web.HTMLEditor;
 import javafx.util.StringConverter;
 
@@ -33,9 +39,8 @@ public class InfoDataController implements Initializable{
     
      private final String pattern = "yyyy-MM-dd";
 
-    @FXML
-    private HBox infoButtonBar;
-    
+    @FXML //injecting and intializing the value of infoButtonBar from .fxml file mapping happens with fx:id
+    private HBox infoButtonBar;   
     
     @FXML
     private Region regionBar;
@@ -52,7 +57,7 @@ public class InfoDataController implements Initializable{
     @FXML
     private Button deleteInfoButton;
 
-    @FXML
+   @FXML
     private Button clearButton;
 
     @FXML
@@ -79,6 +84,7 @@ public class InfoDataController implements Initializable{
 
     @FXML
     private Label displayedIssueLabel;
+    
  @FXML
     private HTMLEditor descriptionText;
     
@@ -87,21 +93,24 @@ public class InfoDataController implements Initializable{
 
     @FXML
     private TextField labelText;
+    
+    
+    
 
     @FXML
     void onClearAction(ActionEvent event) {
-
+     infoTable.getItems().clear();
     }
 
     @FXML
     void onDeleteInfoButtonAction(ActionEvent event) {
-
+     infoTable.getItems().removeAll(
+               infoTable.getSelectionModel().getSelectedItems() );
     }
 
     @FXML
     void onNewInfoButtonAction(ActionEvent event) {
         clear();           
-
     }
 
     @FXML
@@ -115,56 +124,64 @@ public class InfoDataController implements Initializable{
     LocalDate date= datepicker.getValue();
     String text=labelText.getText();
     String description=descriptionText.getHtmlText();
-
-InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
+    InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
         infoTable.getItems().add(info);
 
     }
 
     @FXML
     void onUpdateInfoAction(ActionEvent event) {
-        System.out.println("Udated");
+         InfoDataVo view=infoTable.getSelectionModel().getSelectedItem();
+         if(view!=null){
+        view.setDate(datepicker.getValue().toString());
+        view.setDescription(descriptionText.getHtmlText());
+        view.setLabel(labelText.getText());
+        infoTable.getItems().set(infoTable.getSelectionModel().getSelectedIndex(), view);
+         }        
+        
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
+        saveInfoButton.setFocusTraversable(false);
         TextField filteredTextBox = UIUtil.createClearableTextField();
         
          infoButtonBar.getChildren().add(0, filteredTextBox);
          filteredTextBox.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                System.out.println(newValue);
+                System.out.println("old: "+ oldValue + "  new:  " + newValue);
             }
         });
         
       //mapping table column with infodatavo
       id.setCellValueFactory(new PropertyValueFactory<InfoDataVo,Integer>("id"));
-      label.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("label"));
        date.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("date"));
+            label.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("label"));
         description.setCellValueFactory(new PropertyValueFactory<InfoDataVo,String>("description"));
-        
-        
-        
+     id.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+        date.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+      label.prefWidthProperty().bind(infoTable.widthProperty().divide(0.0));
+        description.prefWidthProperty().bind(infoTable.widthProperty().divide(4));
         //On selection of Table Row
         infoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InfoDataVo>(){
             @Override
             public void changed(ObservableValue<? extends InfoDataVo> observable, InfoDataVo oldValue, InfoDataVo newValue) {
-               populateMasterTable(newValue);
+
+                if(newValue!=null){ populateMasterTable(newValue);    }              
                 
                 
             }
         });
-        
-        
-     
+
         
     }
     
     
     public void populateMasterTable(InfoDataVo data ){
     
-    StringConverter converter = new StringConverter<LocalDate>() {
+    StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
             DateTimeFormatter dateFormatter = 
                 DateTimeFormatter.ofPattern(pattern);
             @Override
@@ -201,8 +218,11 @@ InfoDataVo info=new InfoDataVo(0,date.toString(),text, description);
       datepicker.setValue(LocalDate.now());
       descriptionText.setHtmlText("");
       labelText.setFocusTraversable(true);
+      }  
       
-      }          
+      public void disable(boolean isDisable){
+      saveInfoButton.setDisable(isDisable);      
+      }
     
 
 }
